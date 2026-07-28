@@ -156,6 +156,10 @@ export function layout(): string {
                 font-size: 13px;
             }
 
+            .short-url-pagination[hidden] {
+                display: none !important;
+            }
+
             .short-url-pagination button {
                 appearance: none;
                 border: 1px solid var(--border-color);
