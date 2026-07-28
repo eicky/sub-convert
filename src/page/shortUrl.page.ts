@@ -193,6 +193,7 @@ export function showShortUrlPage(_request: Request, env: Env): Response {
                                 const totalPages = this.#totalPages();
                                 if (this.#page > totalPages) {
                                     this.#page = totalPages;
+                                    return this.#loadList();
                                 }
                                 this.#table.setAttribute('data', JSON.stringify(data.items || []));
                                 this.#updatePagination();
