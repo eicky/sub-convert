@@ -17,6 +17,7 @@ function withController(c: Context<AppBindings>): UrlController {
 }
 
 shortUrlRoute.post('/api/add', c => withController(c).add(c));
+shortUrlRoute.post('/api/admin/verify', c => withController(c).verifyAdmin(c));
 shortUrlRoute.delete('/api/delete', c => withController(c).delete(c));
 shortUrlRoute.get('/api/queryByCode', c => withController(c).queryByCode(c));
 shortUrlRoute.get('/api/queryList', c => withController(c).queryList(c));

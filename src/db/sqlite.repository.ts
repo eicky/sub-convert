@@ -21,18 +21,25 @@ export class SqliteUrlRepository implements IUrlRepository {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 short_code TEXT UNIQUE,
                 short_url TEXT,
-                long_url TEXT
+                long_url TEXT,
+                created_at TEXT
             );
         `);
+
+        const columns = this.db.prepare('PRAGMA table_info(short_url)').all() as Array<{ name: string }>;
+        if (!columns.some(column => column.name === 'created_at')) {
+            this.db.exec('ALTER TABLE short_url ADD COLUMN created_at TEXT');
+        }
     }
 
     async add(long_url: string, baseUrl: string): Promise<ShortUrl> {
         const code = generateShortCode();
         const short_url = `${baseUrl}/${code}`;
+        const created_at = new Date().toISOString();
 
         const result = this.db
-            .prepare('INSERT INTO short_url (short_code, short_url, long_url) VALUES (?, ?, ?)')
-            .run(code, short_url, long_url);
+            .prepare('INSERT INTO short_url (short_code, short_url, long_url, created_at) VALUES (?, ?, ?, ?)')
+            .run(code, short_url, long_url, created_at);
 
         if (result.lastInsertRowid === undefined || result.lastInsertRowid === null) {
             throw new Error('Failed to create short URL');
@@ -42,7 +49,8 @@ export class SqliteUrlRepository implements IUrlRepository {
             id: Number(result.lastInsertRowid),
             short_code: code,
             short_url,
-            long_url
+            long_url,
+            created_at
         };
     }
 
@@ -51,9 +59,9 @@ export class SqliteUrlRepository implements IUrlRepository {
     }
 
     async getByCode(code: string): Promise<ShortUrl | null> {
-        const row = this.db.prepare('SELECT id, short_code, short_url, long_url FROM short_url WHERE short_code = ?').get(code) as
-            | ShortUrl
-            | undefined;
+        const row = this.db
+            .prepare('SELECT id, short_code, short_url, long_url, created_at FROM short_url WHERE short_code = ?')
+            .get(code) as ShortUrl | undefined;
         return row ? { ...row } : null;
     }
 
@@ -61,7 +69,12 @@ export class SqliteUrlRepository implements IUrlRepository {
         const offset = (page - 1) * pageSize;
         const totalRow = this.db.prepare('SELECT COUNT(*) as count FROM short_url').get() as { count: number } | undefined;
         const items = this.db
-            .prepare('SELECT id, short_code, short_url, long_url FROM short_url LIMIT ? OFFSET ?')
+            .prepare(
+                `SELECT id, short_code, short_url, long_url, created_at
+                 FROM short_url
+                 ORDER BY created_at IS NULL, created_at DESC, id DESC
+                 LIMIT ? OFFSET ?`
+            )
             .all(pageSize, offset) as unknown as ShortUrl[];
 
         return {
@@ -70,4 +83,3 @@ export class SqliteUrlRepository implements IUrlRepository {
         };
     }
 }
-

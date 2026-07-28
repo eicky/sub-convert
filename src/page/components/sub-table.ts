@@ -56,15 +56,19 @@ export function SubTable(): string {
                     :host {
                         display: block;
                         width: 100%;
+                        height: 100%;
+                        min-height: 0;
                         font-size: 14px;
                         color: var(--text-primary);
                     }
                     .sub-table {
                         width: 100%;
+                        height: 100%;
                         border: 1px solid var(--border-color);
                         border-radius: var(--radius);
-                        overflow: hidden;
+                        overflow: auto;
                         background: var(--background);
+                        box-sizing: border-box;
                     }
                     table {
                         width: 100%;
@@ -79,6 +83,9 @@ export function SubTable(): string {
                         color: var(--text-secondary, var(--text-primary));
                         font-weight: 600;
                         white-space: nowrap;
+                        position: sticky;
+                        top: 0;
+                        z-index: 1;
                     }
                     tbody td {
                         padding: 10px 12px;

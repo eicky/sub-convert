@@ -11,4 +11,7 @@ interface Env {
     DB?: D1Database;
     /** 短链服务是否启用，由运行时适配层根据仓储可用性注入 */
     SHORT_URL_ENABLED?: boolean;
+    /** 短链管理页访问密钥；未配置时禁止进入管理页 */
+    SHORT_URL_KEY?: string;
 }
+

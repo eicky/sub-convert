@@ -10,6 +10,8 @@ export interface ShortUrl {
     short_code: string;
     short_url: string;
     long_url: string;
+    /** ISO 时间字符串；旧数据可能为 null */
+    created_at?: string | null;
 }
 
 export interface ExcludeRule {

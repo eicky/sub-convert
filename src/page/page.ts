@@ -6,7 +6,7 @@ import { theme } from './script/theme';
 import { layout } from './style/layout';
 import { style } from './style/style';
 
-export { showShortUrlPage } from './shortUrl.page';
+export { showShortUrlPage } from './views/shortUrl/index';
 
 export function showPage(request: Request, env: Env): Response {
     const remoteConfig = getRemoteConfig(env);

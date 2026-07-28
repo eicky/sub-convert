@@ -28,7 +28,8 @@ async function bootstrap(): Promise<void> {
         LOCK_BACKEND: parseBool(process.env.LOCK_BACKEND),
         REMOTE_CONFIG: process.env.REMOTE_CONFIG,
         CHUNK_COUNT: process.env.CHUNK_COUNT,
-        SHORT_URL_ENABLED: shortUrlEnabled
+        SHORT_URL_ENABLED: shortUrlEnabled,
+        SHORT_URL_KEY: process.env.SHORT_URL_KEY
     };
 
     const app = createApp({ repo });

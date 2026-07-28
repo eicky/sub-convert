@@ -67,7 +67,7 @@ export class UrlService {
         return this.repo!.getByCode(code);
     }
 
-    async getList(page = 1, pageSize = 10): Promise<{ total: number; items: ShortUrl[] }> {
+    async getList(page = 1, pageSize = 20): Promise<{ total: number; items: ShortUrl[] }> {
         this.ensureRepo();
         return this.repo!.getList(page, pageSize);
     }

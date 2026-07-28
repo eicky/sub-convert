@@ -3,11 +3,11 @@ import { HTTPException } from 'hono/http-exception';
 
 export async function errorHandler(err: Error, c: Context): Promise<Response> {
     if (err instanceof HTTPException) {
-        return err.getResponse();
+        return c.json({ message: err.message }, err.status);
     }
 
     const message = err?.message || 'Internal Server Error';
 
     console.error('[error]', err);
-    return c.json({ error: message }, 500);
+    return c.json({ message }, 500);
 }

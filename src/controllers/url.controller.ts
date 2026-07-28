@@ -3,6 +3,7 @@ import type { AppBindings } from '../bindings';
 import type { UrlService } from '../services/url.service';
 import { HTTPException } from 'hono/http-exception';
 import { getTargetConfig } from '../page/config/targetConfig';
+import { getConfiguredAdminKey, safeEqualString } from '../shared/adminKey';
 
 export class UrlController {
     constructor(private readonly service: UrlService) {}
@@ -44,7 +45,27 @@ export class UrlController {
         return c.json({ data: result });
     }
 
+    async verifyAdmin(c: Context<AppBindings>): Promise<Response> {
+        if (c.env.SHORT_URL_ENABLED !== true) {
+            throw new HTTPException(503, { message: '短链服务未启用' });
+        }
+
+        const configured = getConfiguredAdminKey(c.env);
+        if (!configured) {
+            throw new HTTPException(503, { message: '请先配置 SHORT_URL_KEY' });
+        }
+
+        const payload = await c.req.json<{ key?: string }>().catch(() => ({ key: '' }));
+        const key = payload?.key?.trim() ?? '';
+        if (!key || !safeEqualString(key, configured)) {
+            throw new HTTPException(401, { message: '密钥不正确' });
+        }
+
+        return c.json({ data: { ok: true } });
+    }
+
     async delete(c: Context<AppBindings>): Promise<Response> {
+        this.assertAdminKey(c);
         const code = c.req.query('code');
         if (!code) {
             throw new HTTPException(400, { message: 'Missing code' });
@@ -54,6 +75,7 @@ export class UrlController {
     }
 
     async queryByCode(c: Context<AppBindings>): Promise<Response> {
+        this.assertAdminKey(c);
         const code = c.req.query('code');
         if (!code) {
             throw new HTTPException(400, { message: 'Missing code' });
@@ -67,8 +89,9 @@ export class UrlController {
     }
 
     async queryList(c: Context<AppBindings>): Promise<Response> {
+        this.assertAdminKey(c);
         const page = Number.parseInt(c.req.query('page') || '1', 10);
-        const pageSize = Number.parseInt(c.req.query('pageSize') || '10', 10);
+        const pageSize = Number.parseInt(c.req.query('pageSize') || '20', 10);
         const result = await this.service.getList(page, pageSize);
         return c.json({ data: result });
     }
@@ -84,5 +107,17 @@ export class UrlController {
             throw new HTTPException(404, { message: 'Not found' });
         }
         return c.redirect(result.long_url, 302);
+    }
+
+    private assertAdminKey(c: Context<AppBindings>): void {
+        const configured = getConfiguredAdminKey(c.env);
+        if (!configured) {
+            throw new HTTPException(503, { message: '请先配置 SHORT_URL_KEY' });
+        }
+
+        const provided = (c.req.header('X-Admin-Key') ?? '').trim();
+        if (!provided || !safeEqualString(provided, configured)) {
+            throw new HTTPException(401, { message: '密钥不正确' });
+        }
     }
 }

@@ -15,6 +15,8 @@ export interface AppEnv {
     DB?: D1Database;
     /** 是否启用短链服务（由适配层根据 DB / Repository 注入情况决定） */
     SHORT_URL_ENABLED?: boolean;
+    /** 短链管理页访问密钥；未配置时禁止进入管理页 */
+    SHORT_URL_KEY?: string;
 }
 
 /** Hono Context Variables，用于跨中间件传递依赖 */

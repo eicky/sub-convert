@@ -146,6 +146,64 @@ export function layout(): string {
                 padding-bottom: 20px;
             }
 
+            html.short-url-page,
+            html.short-url-page body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            html.short-url-page body {
+                align-items: stretch;
+                justify-content: flex-start;
+            }
+
+            html.short-url-page main {
+                width: min(1200px, calc(100% - 40px));
+                max-width: 1200px;
+                height: calc(100vh - 40px);
+                margin: 20px auto;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                box-sizing: border-box;
+            }
+
+            html.short-url-page main > header {
+                flex-shrink: 0;
+            }
+
+            html.short-url-page main > section.short-url-list {
+                flex: 1;
+                min-height: 0;
+                margin-top: 0;
+                padding: 12px 20px 16px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                box-sizing: border-box;
+            }
+
+            html.short-url-page .short-url-toolbar {
+                flex-shrink: 0;
+            }
+
+            html.short-url-page #short-url-table {
+                flex: 1;
+                min-height: 0;
+            }
+
+            html.short-url-page .short-url-pagination {
+                flex-shrink: 0;
+                margin-top: 12px;
+            }
+
+            .short-url-toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                margin-bottom: 12px;
+            }
+
             .short-url-pagination {
                 display: flex;
                 align-items: center;
