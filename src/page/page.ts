@@ -6,6 +6,8 @@ import { theme } from './script/theme';
 import { layout } from './style/layout';
 import { style } from './style/style';
 
+export { showShortUrlPage } from './shortUrl.page';
+
 export function showPage(request: Request, env: Env): Response {
     const remoteConfig = getRemoteConfig(env);
     const backendConfig = getBackendConfig(request, env);
@@ -91,7 +93,10 @@ export function showPage(request: Request, env: Env): Response {
 
                         <span class="header__title">订阅转换</span>
 
-                        <button class="header__theme"></button>
+                        <div class="header__right">
+                            <a class="header__nav" href="/shortUrl">短链管理</a>
+                            <button class="header__theme" type="button"></button>
+                        </div>
                     </header>
 
                     <section>
