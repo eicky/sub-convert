@@ -70,30 +70,34 @@
 
 ### 环境变量配置（通用）
 
-| 变量名            | 说明                             | 默认值              | 必填 | 备注                               |
-| ----------------- | -------------------------------- | ------------------- | ---- | ---------------------------------- |
-| `BACKEND`         | 转换时的后端服务地址             | `https://url.v1.mk` | ❌   | 真正执行转换的服务地址             |
-| `DEFAULT_BACKEND` | 默认后端服务地址                 | worker服务地址      | ❌   |                                    |
-| `LOCK_BACKEND`    | 是否锁定后端服务                 | `false`             | ❌   |                                    |
-| `CUSTOM_BACKEND`  | 自定义后端服务地址(支持多行配置) | 无                  | ❌   | 每行填写一个                       |
-| `REMOTE_CONFIG`   | 自定义远程配置<br>(支持多行配置) | `https://xxxxx1`    | ❌   |                                    |
-| `CHUNK_COUNT`     | 节点批量处理分片大小             | `20`                | ❌   |                                    |
+| 变量名            | 说明                             | 默认值              | 必填 | 备注                            |
+| ----------------- | -------------------------------- | ------------------- | ---- | ------------------------------- |
+| `BACKEND`         | 转换时的后端服务地址             | `https://url.v1.mk` | ❌   | 真正执行转换的服务地址          |
+| `DEFAULT_BACKEND` | 默认后端服务地址                 | worker服务地址      | ❌   |                                 |
+| `LOCK_BACKEND`    | 是否锁定后端服务                 | `false`             | ❌   |                                 |
+| `CUSTOM_BACKEND`  | 自定义后端服务地址(支持多行配置) | 无                  | ❌   | 每行填写一个                    |
+| `REMOTE_CONFIG`   | 自定义远程配置<br>(支持多行配置) | `https://xxxxx1`    | ❌   |                                 |
+| `CHUNK_COUNT`     | 节点批量处理分片大小             | `20`                | ❌   |                                 |
+| `SHORT_URL_KEY`   | 短链管理页访问密钥               | 无                  | ❌\* | 进入 `/shortUrl` 管理页时必填\* |
+
+> \* 主页「生成短链」只需启用短链服务即可，不依赖 `SHORT_URL_KEY`。访问管理页时则必须同时满足：短链服务已启用，且已配置 `SHORT_URL_KEY`。
 
 ### 短链服务开关
 
-| 运行环境             | 开关方式                                                       | 数据库            |
-| -------------------- | -------------------------------------------------------------- | ----------------- |
-| Cloudflare Worker    | 在 `wrangler.jsonc` 绑定 `DB`（D1）                            | Cloudflare D1     |
-| Docker / Node        | 设置 `DATABASE_DRIVER=sqlite`（默认值）                        | `node:sqlite` 本地文件 |
+| 运行环境          | 开关方式                                | 数据库                 |
+| ----------------- | --------------------------------------- | ---------------------- |
+| Cloudflare Worker | 在 `wrangler.jsonc` 绑定 `DB`（D1）     | Cloudflare D1          |
+| Docker / Node     | 设置 `DATABASE_DRIVER=sqlite`（默认值） | `node:sqlite` 本地文件 |
 
 ### Docker / Node 专属变量
 
-| 变量名              | 说明                          | 默认值                      |
-| ------------------- | ----------------------------- | --------------------------- |
-| `DATABASE_DRIVER`   | 数据库驱动，留空则关闭短链    | `sqlite`                    |
-| `SQLITE_PATH`       | SQLite 数据库文件路径         | `/data/sub-convert.sqlite`  |
-| `PORT`              | HTTP 服务端口                 | `3000`                      |
-| `HOST`              | 监听地址                      | `0.0.0.0`                   |
+| 变量名            | 说明                           | 默认值                     |
+| ----------------- | ------------------------------ | -------------------------- |
+| `DATABASE_DRIVER` | 数据库驱动，留空则关闭短链     | `sqlite`                   |
+| `SQLITE_PATH`     | SQLite 数据库文件路径          | `/data/sub-convert.sqlite` |
+| `PORT`            | HTTP 服务端口                  | `3000`                     |
+| `HOST`            | 监听地址                       | `0.0.0.0`                  |
+| `SHORT_URL_KEY`   | 短链管理页访问密钥（推荐配置） | 无                         |
 
 ## 📝 使用说明
 
@@ -118,10 +122,10 @@ pnpm build:worker   # 仅 Cloudflare 产物
 pnpm build:node     # 仅 Node 产物
 ```
 
-| 产物                       | 用途                                              |
-| -------------------------- | ------------------------------------------------- |
-| `dist/worker/_worker.js`   | Cloudflare Worker / Pages 自包含 bundle           |
-| `dist/node/server.mjs`     | Node.js / Docker 入口，node_modules 保持 external |
+| 产物                     | 用途                                              |
+| ------------------------ | ------------------------------------------------- |
+| `dist/worker/_worker.js` | Cloudflare Worker / Pages 自包含 bundle           |
+| `dist/node/server.mjs`   | Node.js / Docker 入口，node_modules 保持 external |
 
 ### ☁️ 部署方式一：Cloudflare Worker（wrangler）
 
@@ -163,6 +167,7 @@ docker run -d \
   -e BACKEND=https://url.v1.mk \
   -e DATABASE_DRIVER=sqlite \
   -e SQLITE_PATH=/data/sub-convert.sqlite \
+  -e SHORT_URL_KEY=your-admin-key \
   ghcr.io/jwygithub/sub-convert:latest
 ```
 
@@ -194,6 +199,40 @@ pnpm docker:run     # 使用默认 env 启动一个临时容器
 - **Cloudflare**：`wrangler.jsonc` 中绑定了 D1（`DB`）→ 启用
 - **Node / Docker**：`DATABASE_DRIVER=sqlite`（默认值）→ 启用；设为空字符串关闭
 
+#### 🖥 短链管理页
+
+访问路径：`/shortUrl`（主页 header 也提供「短链管理」入口）。
+
+管理页能力：
+
+- 按创建时间倒序查看短链列表（默认每页 20 条），支持复制 / 删除
+- 列表区域内滚动，整页不滚动
+- 通过弹窗手动生成短链
+
+进入管理页的前置条件（需同时满足）：
+
+1. 短链服务已启用（见上方开关说明）
+2. 已配置环境变量 `SHORT_URL_KEY`
+
+行为说明：
+
+| 场景                           | 行为                                     |
+| ------------------------------ | ---------------------------------------- |
+| 短链服务未启用                 | 提示后返回主页                           |
+| 已启用但未配置 `SHORT_URL_KEY` | 提示「请先配置 SHORT_URL_KEY」后返回主页 |
+| 密钥正确                       | 进入管理列表                             |
+| 密钥错误                       | 提示「密钥不正确」后返回主页             |
+
+密钥校验通过后会缓存在浏览器 `sessionStorage`（键名 `short_url_admin_key`）：同一标签页内再次进入无需重复输入；关闭标签页后失效。
+
+> 主页「生成短链」逻辑不变：只要短链服务启用即可生成，不要求配置或输入 `SHORT_URL_KEY`。
+> 管理相关接口（列表 / 删除 / 按 code 查询）会校验请求头 `X-Admin-Key`；`POST /api/add` 与短链跳转不受影响。
+
+配置方式：
+
+- **Cloudflare**：在 Worker / Pages 的 Secrets 或变量中设置 `SHORT_URL_KEY`
+- **Node / Docker**：在 `.env` 或容器环境变量中设置，例如 `SHORT_URL_KEY=your-admin-key`
+
 #### 💾 数据库表
 
 - 表名：`short_url`
@@ -202,6 +241,7 @@ pnpm docker:run     # 使用默认 env 启动一个临时容器
     - `short_code`：短链码
     - `short_url`：短链 URL
     - `long_url`：原始订阅链接
+    - `created_at`：创建时间（ISO 字符串，可为空，兼容旧数据）
 
 #### 💾 数据库结构
 
@@ -210,11 +250,18 @@ CREATE TABLE IF NOT EXISTS short_url (
     id INTEGER PRIMARY KEY,
     short_code TEXT,
     short_url TEXT,
-    long_url TEXT
+    long_url TEXT,
+    created_at TEXT
 );
 ```
 
-> Cloudflare D1 环境下表由 `schema.sql` 初始化；Node/Docker 环境下由 `SqliteUrlRepository` 启动时自动建表，挂载数据卷（如 `-v sub-data:/data`）持久化。
+> Cloudflare D1 环境下表由 `schema.sql` 初始化；Node/Docker 环境下由 `SqliteUrlRepository` 启动时自动建表，并自动为旧表补充 `created_at` 列，挂载数据卷（如 `-v sub-data:/data`）持久化。
+
+已有 D1 库若缺少 `created_at`，可执行一次迁移：
+
+```bash
+wrangler d1 execute <DB_NAME> --file=./migrations/001_add_created_at.sql
+```
 
 #### 💾 配置示例
 
@@ -236,10 +283,10 @@ CREATE TABLE IF NOT EXISTS short_url (
 
 仓库采用 tag 驱动的统一发布模式，推送 `v*.*.*` 会并行触发两条流水线：
 
-| 事件              | 触发的 GitHub Action                                              | 产物                                                               |
-| ----------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------ |
-| push tag `v*.*.*` | [`cloudflare-release`](.github/workflows/cloudflare-release.yml) | `release` 分支更新 `_worker.js` + `_worker.zip`                    |
-| push tag `v*.*.*` | [`docker-release`](.github/workflows/docker-release.yml)         | GHCR multi-arch 镜像 `ghcr.io/<owner>/<repo>:<tag>` + `latest`     |
+| 事件 | 触发的 GitHub Action | 产物 |
+| --- | --- | --- |
+| push tag `v*.*.*` | [`cloudflare-release`](.github/workflows/cloudflare-release.yml) | `release` 分支更新 `_worker.js` + `_worker.zip` |
+| push tag `v*.*.*` | [`docker-release`](.github/workflows/docker-release.yml) | GHCR multi-arch 镜像 `ghcr.io/<owner>/<repo>:<tag>` + `latest` |
 
 发布命令：
 
@@ -269,3 +316,4 @@ git push origin v0.1.0
 ## 📄 开源协议
 
 本项目遵循 [LICENSE](./LICENSE) 开源协议。
+
