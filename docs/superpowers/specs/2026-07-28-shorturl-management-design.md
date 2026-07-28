@@ -37,7 +37,7 @@ Add a `/shortUrl` management page that matches the existing Sub Converter dark/l
 ### Page layout
 
 1. **Header** — same shell as convert page (GitHub icon, title「短链管理」, theme toggle) + nav link「订阅转换」
-2. **Create section** — `sub-form` with long URL `sub-input` / `sub-textarea` and「生成短链」`sub-button`
+2. **Create section** — `sub-form` with long URL `sub-textarea` and「生成短链」`sub-button`
 3. **List section** — `<sub-table>` with columns short URL, long URL (ellipsis), actions (copy / delete)
 4. **Pagination** — page-level controls under the table (not inside `<sub-table>`)
 
