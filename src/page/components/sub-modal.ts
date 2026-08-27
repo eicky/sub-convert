@@ -63,7 +63,9 @@ export function SubModal(): string {
                     .sub-modal__panel {
                         width: min(520px, 100%);
                         max-height: min(80vh, 640px);
-                        overflow: auto;
+                        overflow: hidden;
+                        display: flex;
+                        flex-direction: column;
                         background: var(--background);
                         color: var(--text-primary);
                         border: 1px solid var(--border-color);
@@ -77,6 +79,7 @@ export function SubModal(): string {
                         gap: 12px;
                         padding: 14px 16px;
                         border-bottom: 1px solid var(--border-color);
+                        flex-shrink: 0;
                     }
                     .sub-modal__title {
                         font-size: 16px;
@@ -99,6 +102,9 @@ export function SubModal(): string {
                     }
                     .sub-modal__body {
                         padding: 16px;
+                        flex: 1;
+                        min-height: 0;
+                        overflow: auto;
                     }
                     .sub-modal__footer {
                         display: flex;
@@ -106,8 +112,10 @@ export function SubModal(): string {
                         align-items: center;
                         gap: 10px;
                         padding: 12px 16px 16px;
+                        flex-shrink: 0;
                     }
-                    .sub-modal__footer:empty {
+                    .sub-modal__footer:empty,
+                    .sub-modal__footer[hidden] {
                         display: none;
                     }
                 \`;
@@ -138,6 +146,14 @@ export function SubModal(): string {
                 });
                 mask.querySelector('.sub-modal__close').addEventListener('click', () => this.#close());
                 mask.querySelector('.sub-modal__panel').addEventListener('click', e => e.stopPropagation());
+
+                const footer = mask.querySelector('.sub-modal__footer');
+                const footerSlot = footer.querySelector('slot');
+                const syncFooter = () => {
+                    footer.hidden = footerSlot.assignedNodes({ flatten: true }).length === 0;
+                };
+                footerSlot.addEventListener('slotchange', syncFooter);
+                syncFooter();
             }
 
             #close() {

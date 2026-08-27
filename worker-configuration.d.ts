@@ -13,5 +13,9 @@ interface Env {
     SHORT_URL_ENABLED?: boolean;
     /** 短链管理页访问密钥；未配置时禁止进入管理页 */
     SHORT_URL_KEY?: string;
+
+    ORCA_ROUTER_URL?: string;
+    ORCA_ROUTER_TOKEN?: string;
+    ORCA_ROUTER_MODEL?: string;
 }
 

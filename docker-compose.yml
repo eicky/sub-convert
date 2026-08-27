@@ -27,4 +27,6 @@ services:
             # ---- 运行时 ----
             PORT: '3000'
             HOST: 0.0.0.0
-
+            #ORCA_ROUTER_URL: https://api.orcarouter.ai
+            #ORCA_ROUTER_TOKEN: your_token
+            #ORCA_ROUTER_MODEL: deepseek/deepseek-v4-flash-free

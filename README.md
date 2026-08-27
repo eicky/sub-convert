@@ -1,6 +1,6 @@
 # sub-convert
 
-一个防止节点泄漏的订阅转换小工具，**同时支持 Cloudflare Worker / Pages 与 Docker 自托管** [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jwyGithub/sub-convert)
+一个防止节点泄漏的订阅转换小工具，**同时支持 Cloudflare Worker / Pages 与 Docker 自托管** [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jwyGithub/sub-convert) [![Powered by OrcaRouter](https://img.shields.io/badge/Powered_by-OrcaRouter-2563eb)](https://www.orcarouter.ai/ref/ref_d9973e6edce4e332d822)
 
 <p align="center">
   <img src="https://img.shields.io/github/actions/workflow/status/jwyGithub/sub-convert/cloudflare-release.yml?label=cloudflare" alt='cloudflare build'>

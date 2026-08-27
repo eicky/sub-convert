@@ -29,7 +29,10 @@ async function bootstrap(): Promise<void> {
         REMOTE_CONFIG: process.env.REMOTE_CONFIG,
         CHUNK_COUNT: process.env.CHUNK_COUNT,
         SHORT_URL_ENABLED: shortUrlEnabled,
-        SHORT_URL_KEY: process.env.SHORT_URL_KEY
+        SHORT_URL_KEY: process.env.SHORT_URL_KEY,
+        ORCA_ROUTER_URL: process.env.ORCA_ROUTER_URL,
+        ORCA_ROUTER_TOKEN: process.env.ORCA_ROUTER_TOKEN,
+        ORCA_ROUTER_MODEL: process.env.ORCA_ROUTER_MODEL
     };
 
     const app = createApp({ repo });

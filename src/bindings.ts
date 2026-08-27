@@ -17,6 +17,12 @@ export interface AppEnv {
     SHORT_URL_ENABLED?: boolean;
     /** 短链管理页访问密钥；未配置时禁止进入管理页 */
     SHORT_URL_KEY?: string;
+    /** OrcaRouter OpenAI 兼容接口地址 */
+    ORCA_ROUTER_URL?: string;
+    /** OrcaRouter API Token，仅服务端使用 */
+    ORCA_ROUTER_TOKEN?: string;
+    /** OrcaRouter 模型名 */
+    ORCA_ROUTER_MODEL?: string;
 }
 
 /** Hono Context Variables，用于跨中间件传递依赖 */
